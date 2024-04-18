@@ -25,6 +25,16 @@ function operate(expression) {
         return divide(Number(firstNumber), Number(secondNumber));
 }
 
+function calculate(expression) {
+    let { firstNumber, secondNumber, operator } = expression;
+    if (firstNumber && operator && secondNumber) {
+        firstNumber = operate(expression);
+    }
+    expression.firstNumber = String(firstNumber);
+    expression.secondNumber = "";
+    expression.operator = "";
+}
+
 function displayExpression(expression) {
     const { firstNumber, secondNumber, operator } = expression;
     const expressionAreaElement = document.querySelector(
@@ -44,7 +54,7 @@ function createExpression(target, expression) {
         const value = target.dataset["value"];
         if (firstNumber && !secondNumber) {
             operator = value;
-        } else {
+        } else if (secondNumber) {
             firstNumber = operate(expression);
             operator = value;
             secondNumber = "";
@@ -68,7 +78,9 @@ function createExpression(target, expression) {
 function backspace(expression) {
     let { firstNumber, secondNumber, operator, decimalPointExist } = expression;
 
-    if (secondNumber) {
+    if (firstNumber === "Infinity") {
+        firstNumber = "";
+    } else if (secondNumber) {
         if (secondNumber[secondNumber.length - 1] === ".") {
             decimalPointExist = false;
         }
@@ -86,6 +98,13 @@ function backspace(expression) {
     expression.secondNumber = secondNumber;
     expression.operator = operator;
     expression.decimalPointExist = decimalPointExist;
+}
+
+function clearExpression(expression) {
+    expression.firstNumber = "";
+    expression.secondNumber = "";
+    expression.operator = "";
+    expression.decimalPointExist = false;
 }
 
 // main
@@ -113,10 +132,7 @@ function backspace(expression) {
 
     clearBtnElement.addEventListener("click", (e) => {
         e.stopPropagation();
-        expression.firstNumber = "";
-        expression.secondNumber = "";
-        expression.operator = "";
-        expression.decimalPointExist = false;
+        clearExpression(expression);
         displayExpression(expression);
     });
 
@@ -128,15 +144,7 @@ function backspace(expression) {
 
     calculateBtnElement.addEventListener("click", (e) => {
         e.stopPropagation();
-        let { firstNumber, secondNumber, operator } = expression;
-        if (firstNumber && operator && secondNumber) {
-            firstNumber = operate(expression);
-        } else if (firstNumber && operator) {
-            firstNumber = operate(expression);
-        }
-        expression.firstNumber = String(firstNumber);
-        expression.secondNumber = "";
-        expression.operator = "";
+        calculate(expression);
         displayExpression(expression);
     });
 })();
